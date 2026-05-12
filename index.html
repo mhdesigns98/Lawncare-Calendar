@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lawn & Yard Calendar · Zone 7b · Tall Fescue</title>
+  <meta name="description" content="A seasonal maintenance calendar for Zone 7b Tall Fescue lawns. Fork and adapt for your own zone and grass type." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — edit these to retheme the whole tool
+       ============================================================ */
+    :root {
+      --forest:     #152b1e;
+      --canopy:     #1e4030;
+      --leaf:       #2d6a4f;
+      --sage:       #74a98a;
+      --mist:       #b7d5c4;
+      --parchment:  #f4efe6;
+      --cream:      #faf8f4;
+      --earth:      #7c4f2a;
+      --rust:       #b05c25;
+      --amber:      #e9a43a;
+      --alert-bg:   #fdf3e0;
+      --alert-bdr:  #e9a43a;
+      --ink:        #1a1f1c;
+      --ink-soft:   #3d4d42;
+      --ink-faint:  #6b7d72;
+      --border:     #dde8e2;
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --font-head:  'Fraunces', Georgia, serif;
+      --font-body:  'DM Sans', system-ui, sans-serif;
+      --font-mono:  'DM Mono', monospace;
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    a { color: var(--leaf); }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .site-header {
+      background: var(--forest);
+      color: var(--cream);
+      padding: 52px 20px 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 20% 110%, rgba(45,106,79,.45) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% -10%,  rgba(116,169,138,.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .header-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 14px;
+    }
+
+    .header-title {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 500;
+      line-height: 1.15;
+      color: var(--parchment);
+      margin-bottom: 14px;
+    }
+
+    .header-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--mist);
+    }
+
+    .header-meta {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      font-size: 13px;
+      color: var(--mist);
+      margin-top: 18px;
+    }
+
+    .header-meta span::before { content: '· '; opacity: .5; }
+    .header-meta span:first-child::before { content: ''; }
+
+    /* ============================================================
+       ZONE BANNER
+       ============================================================ */
+    .zone-banner {
+      background: var(--leaf);
+      color: #fff;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      letter-spacing: .04em;
+    }
+
+    .zone-banner strong { color: var(--amber); }
+
+    /* ============================================================
+       NAV TABS
+       ============================================================ */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin: 36px 0 28px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-faint);
+      background: none;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: color .15s;
+    }
+
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.active { color: var(--leaf); border-bottom-color: var(--leaf); }
+
+    /* ============================================================
+       MONTH PILLS
+       ============================================================ */
+    .month-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .month-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: .04em;
+    }
+
+    .month-pill:hover { border-color: var(--sage); color: var(--leaf); }
+    .month-pill.active { background: var(--leaf); color: #fff; border-color: var(--leaf); }
+
+    /* season tints on pills */
+    .month-pill[data-season="winter"]  { border-color: #aac6d5; color: #3a6478; }
+    .month-pill[data-season="spring"]  { border-color: #90c090; color: #2d6a4f; }
+    .month-pill[data-season="summer"]  { border-color: #e0c070; color: #7a5010; }
+    .month-pill[data-season="fall"]    { border-color: #c8a070; color: #7c4f2a; }
+    .month-pill.active { background: var(--leaf) !important; color: #fff !important; border-color: var(--leaf) !important; }
+
+    /* ============================================================
+       SEASON BADGE
+       ============================================================ */
+    .season-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    .season-badge.winter { background: #dceef7; color: #2a5470; }
+    .season-badge.spring { background: #daf0e3; color: #1e5c3a; }
+    .season-badge.summer { background: #fef3d0; color: #7a5010; }
+    .season-badge.fall   { background: #f5e6d3; color: #7c4020; }
+
+    /* ============================================================
+       ALERT STRIPS
+       ============================================================ */
+    .alert-strip {
+      background: var(--alert-bg);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: var(--earth);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .alert-strip::before { content: '⚠'; flex-shrink: 0; }
+
+    /* ============================================================
+       TASK CARDS
+       ============================================================ */
+    .task-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+
+    .task-card-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .task-card-label.lawn  { color: var(--leaf); }
+    .task-card-label.plant { color: var(--earth); }
+
+    .task-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .task-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .task-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+
+    .task-dot.lawn  { background: var(--leaf); }
+    .task-dot.plant { background: var(--earth); }
+
+    /* ============================================================
+       QUICK REFERENCE
+       ============================================================ */
+    .qr-section-title {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 24px 0 10px;
+    }
+
+    .qr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .qr-table tr { border-bottom: 1px solid var(--border); }
+    .qr-table tr:last-child { border-bottom: none; }
+
+    .qr-table td {
+      padding: 9px 6px;
+      vertical-align: top;
+    }
+
+    .qr-table td:last-child {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+
+    .ref-card {
+      background: var(--parchment);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: 14px;
+      margin-top: 14px;
+    }
+
+    .ref-card-title {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+    }
+
+    /* ============================================================
+       EMERGENCY TABLE
+       ============================================================ */
+    .em-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-top: 6px;
+    }
+
+    .em-table th {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .em-table td {
+      padding: 9px 8px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .em-table tr:last-child td { border-bottom: none; }
+
+    .em-table td:first-child { font-weight: 500; color: var(--ink); }
+    .em-table td:nth-child(2) { color: var(--ink-soft); }
+    .em-table td:last-child { color: var(--earth); }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .site-footer {
+      margin-top: 60px;
+      padding: 28px 0;
+      border-top: 1.5px solid var(--border);
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-faint);
+    }
+
+    .site-footer a { color: var(--ink-faint); text-decoration: underline; }
+
+    /* ============================================================
+       UTILITY
+       ============================================================ */
+    .hidden { display: none !important; }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 600px) {
+      .em-table th:nth-child(2), .em-table td:nth-child(2) { display: none; }
+      .tab-btn { padding: 10px 14px; font-size: 13px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="header-eyebrow">Seasonal Maintenance Tool</p>
+      <h1 class="header-title">Lawn & Yard<br><em>Master Calendar</em></h1>
+      <div class="header-meta">
+        <span>Tall Fescue (TTTF)</span>
+        <span>Zone 7b</span>
+        <span>Central Virginia</span>
+        <span>NC State Extension + proylaw.com</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       ZONE CALLOUT — EDIT THIS for your zone/grass type
+       ============================================================ -->
+  <div class="zone-banner">
+    Built for <strong>Zone 7b · Tall Fescue</strong> &mdash;
+    fork and edit <code>CALENDAR_DATA</code> in the source for your zone &amp; grass type
+  </div>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="page-wrap">
+
+    <!-- Tab navigation -->
+    <nav class="tab-nav" role="tablist" aria-label="Calendar sections">
+      <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="calendar"  onclick="showTab('calendar',  this)">📅 Calendar</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" data-tab="quickref"  onclick="showTab('quickref',  this)">📌 Quick Reference</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" data-tab="emergency" onclick="showTab('emergency', this)">🚨 Emergency Guide</button>
+    </nav>
+
+    <!-- ── CALENDAR TAB ── -->
+    <section id="tab-calendar" role="tabpanel">
+      <div class="month-row" id="month-pills"></div>
+      <div id="month-content"></div>
+    </section>
+
+    <!-- ── QUICK REFERENCE TAB ── -->
+    <section id="tab-quickref" role="tabpanel" class="hidden">
+
+      <p class="qr-section-title">🌱 Lawn task windows</p>
+      <div class="task-card">
+        <table class="qr-table">
+          <tbody id="qr-lawn-rows"></tbody>
+        </table>
+      </div>
+
+      <p class="qr-section-title">🌿 Plant task windows</p>
+      <div class="task-card">
+        <table class="qr-table">
+          <tbody id="qr-plant-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="ref-card">
+        <p class="ref-card-title">Seeding rate</p>
+        <p>Turf-type Tall Fescue blend at <strong>6 lbs per 1,000 sq ft</strong>. Use starter fertilizer (high phosphorus). Keep seedbed moist — light watering several times per day.</p>
+      </div>
+
+      <div class="ref-card">
+        <p class="ref-card-title">Fertilizer math</p>
+        <p>To apply 1 lb N per 1,000 sq ft: divide 100 by the first number on the bag.<br>
+        Example: 10-10-10 → 100 ÷ 10 = <strong>10 lbs of product</strong> per 1,000 sq ft.<br>
+        Fall ratio target: <strong>3-1-2 or 4-1-2 N-P-K</strong> (e.g., 12-4-8 or 16-4-8).</p>
+      </div>
+
+      <div class="ref-card">
+        <p class="ref-card-title">Mowing heights by season</p>
+        <p>Spring / Winter: <strong>2½–3½"</strong> &nbsp;·&nbsp; Summer: <strong>3½"</strong> (never exceed 5") &nbsp;·&nbsp; Fall: <strong>2½–3"</strong></p>
+      </div>
+
+    </section>
+
+    <!-- ── EMERGENCY GUIDE TAB ── -->
+    <section id="tab-emergency" role="tabpanel" class="hidden">
+
+      <div class="task-card" style="margin-bottom:20px;">
+        <p class="task-card-label plant">Plants — if leaves look…</p>
+        <table class="em-table">
+          <thead>
+            <tr><th>Symptom</th><th>Usually means</th><th>Fix</th></tr>
+          </thead>
+          <tbody id="em-plant-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="task-card">
+        <p class="task-card-label lawn">Lawn — if you see…</p>
+        <table class="em-table">
+          <thead>
+            <tr><th>Symptom</th><th>Usually means</th><th>Fix</th></tr>
+          </thead>
+          <tbody id="em-lawn-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="ref-card" style="margin-top:16px;">
+        <p class="ref-card-title">Orpine reality check</p>
+        <p>It's called "Live-Forever" for a reason. Thrives on neglect. If you're spending more than 5 minutes a month on it, you're doing too much.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <p>Sources: <a href="https://extension.ces.ncsu.edu/lawn-maintenance-calendars/tall-fescue/" target="_blank" rel="noopener">NC State Extension</a> &nbsp;·&nbsp; <a href="https://proylaw.com" target="_blank" rel="noopener">proylaw.com</a></p>
+    <p style="margin-top:6px;font-size:12px;">Zone 7b · Tall Fescue · Last updated May 2026 · <a href="https://github.com/" target="_blank" rel="noopener">Fork on GitHub</a></p>
+  </footer>
+
+
+  <script>
+    /* ============================================================
+       CONFIG — edit this block to customize for your zone/lawn
+       ============================================================ */
+    const CONFIG = {
+      grassType:  "Tall Fescue (TTTF)",
+      zone:       "7b",
+      location:   "Central Virginia",
+      soilPH:     "5.2",
+      updated:    "May 2026"
+    };
+
+    /* ============================================================
+       CALENDAR DATA
+       One entry per month (index 0 = January).
+
+       Each month object:
+         season   — "winter" | "spring" | "summer" | "fall"
+         lawn     — string[] of lawn tasks
+         plants   — string[] of plant tasks
+         alerts   — string[] of time-sensitive callouts (shown as ⚠ strips)
+       ============================================================ */
+    const CALENDAR_DATA = [
+      /* 0 — January */
+      {
+        season: "winter",
+        lawn:   ["No major tasks."],
+        plants: ["Water young Arborvitae if no rain or snow — they desiccate in dry winters."],
+        alerts: []
+      },
+      /* 1 — February */
+      {
+        season: "winter",
+        lawn: [
+          "Fertilize: 1 lb N per 1,000 sq ft (February feeding per NC State).",
+          "Broadleaf herbicide for chickweed/henbit if present.",
+          "Watch soil temps — pre-emergent window opens Mar 1."
+        ],
+        plants: [
+          "Prune roses hard: cut back by half, remove dead canes.",
+          "Arborvitae: clean up dead wood. Major structural pruning OK while dormant.",
+          "Maple: major structural pruning while fully dormant.",
+          "Apply mulch late this month to suppress weeds before they wake up."
+        ],
+        alerts: []
+      },
+      /* 2 — March */
+      {
+        season: "spring",
+        lawn: [
+          "Pre-emergent main window Mar 1–Apr 11. Apply Prodiamine or Dimension when soil hits 55°F for 5 consecutive days.",
+          "Mow: 2½–3½ inches. Leave clippings on lawn.",
+          "Water: 1 inch/week. Water 2–8 a.m. to reduce disease risk."
+        ],
+        plants: [
+          "THE ONE BIG FEEDING: balanced slow-release for everything. Acid-loving (Holly-tone) for Maple and Arborvitae.",
+          "Prune lavender once you see green — don't cut into old wood.",
+          "Shape hollies. Clean up base of Japanese Maples.",
+          "Watch for aphids on Orpine and Maple."
+        ],
+        alerts: ["Pre-emergent window open: Mar 1 – Apr 11"]
+      },
+      /* 3 — April */
+      {
+        season: "spring",
+        lawn: [
+          "Pre-emergent window closes Apr 11.",
+          "Spring fertilization: Apr 1–Apr 17.",
+          "Grub preventative (Chlorantraniliprole / GrubEx): apply Apr–Jun.",
+          "Apr 15: spot spray broadleaf weeds (dandelions, clover) with 2,4-D based herbicide."
+        ],
+        plants: [
+          "Last call — finish shaping Boxwood, Golden Euonymus, Aucuba before spring flush.",
+          "Feed Rhododendrons and Hollies with acid-loving fertilizer."
+        ],
+        alerts: ["Pre-emergent closes Apr 11", "Spring fertilizer: Apr 1 – Apr 17"]
+      },
+      /* 4 — May */
+      {
+        season: "spring",
+        lawn: [
+          "No major tasks. Monitor irrigation.",
+          "May 15: apply preventative fungicide (Azoxystrobin) before nights stay consistently above 65°F. TTTF is prone to brown patch."
+        ],
+        plants: [
+          "No major tasks.",
+          "Monitor moisture — Mophead Hydrangeas are thirsty."
+        ],
+        alerts: ["May 15: preventative fungicide if nights > 65°F"]
+      },
+      /* 5 — June */
+      {
+        season: "summer",
+        lawn: [
+          "Monitor rainfall before watering. Irrigation watch: Jun 1–Sep 28.",
+          "Jun 15: apply season-long grub preventative (Acelepryn or Merit) — last chance before egg-laying peaks.",
+          "Mow to 3½ inches. Never let it exceed 5 inches.",
+          "Watch for brown patch: develops when temps exceed 85°F + high humidity."
+        ],
+        plants: [
+          "Post-bloom: prune Rhododendrons and old-wood Hydrangeas only after flowers fade. Lightly trim Boxwoods.",
+          "Deadhead Roses and Lavender only — hands off major pruning.",
+          "Neem oil for Maple/Arborvitae aphids. Arborvitae: water 2–3x/week."
+        ],
+        alerts: ["Jun 15: season-long grub control (Acelepryn/Merit)", "Irrigation watch begins Jun 1"]
+      },
+      /* 6 — July */
+      {
+        season: "summer",
+        lawn: [
+          "Do NOT fertilize — TTTF is in survival mode.",
+          "Deep watering: 1–1.5 inches/week. Deep and infrequent.",
+          "Grub/insect check: Jul 1–Sep 20. Watch for bird pecking, lifting sod, thinning patches.",
+          "Watch for gray leaf spot: active Jul–Oct when nights stay above 70°F.",
+          "Dormant lawns: water every 3 weeks minimum during drought."
+        ],
+        plants: [
+          "Watering is your only job.",
+          "Soak Hydrangeas and Japanese Maple weekly if no rain."
+        ],
+        alerts: ["No lawn fertilizer", "Grub/insect check: Jul 1 – Sep 20"]
+      },
+      /* 7 — August */
+      {
+        season: "summer",
+        lawn: [
+          "Do NOT fertilize until Aug 25.",
+          "Deep watering: 1–1.5 inches/week.",
+          "Grub check continues — apply curative treatment ONLY if active damage is visible.",
+          "Aug 25 ▶ Fall fertilizer window OPENS. Strongest feeding period for cool-season grass (through Oct 20).",
+          "Aug 25 ▶ Overseed/seed repair window OPENS (through Oct 10)."
+        ],
+        plants: [
+          "Continue hands-off watering mode. No pruning, no fertilizer."
+        ],
+        alerts: ["Aug 25: fall fertilizer + overseed windows open"]
+      },
+      /* 8 — September */
+      {
+        season: "fall",
+        lawn: [
+          "THE 'NEW YEAR' FOR TTTF.",
+          "Core aerate: Sep 1–Oct 15 window.",
+          "Overseed (Piedmont): Sep 1–Oct 1. Turf-type Tall Fescue at 6 lbs / 1,000 sq ft. Starter fertilizer (high phosphorus). Keep seedbed moist.",
+          "Fertilize mid-September: 1 lb N per 1,000 sq ft using 3-1-2 or 4-1-2 ratio (e.g., 12-4-8).",
+          "Mow: drop back to 2½–3 inches.",
+          "Mulch leaves: up to 6 inches with mulching blade (dry leaves only). ⚠ Do NOT mulch if overseeding."
+        ],
+        plants: [
+          "Final tidy — lightly trim Euonymus if wild. Last deadheading for Roses.",
+          "NO fertilizer — don't push new growth before first frost.",
+          "Water all plants so they aren't bone-dry entering dormancy."
+        ],
+        alerts: ["Core aeration: Sep 1–Oct 15", "Overseed: Sep 1–Oct 1", "No plant fertilizer this month"]
+      },
+      /* 9 — October */
+      {
+        season: "fall",
+        lawn: [
+          "Oct 15: nitrogen push — high-nitrogen fertilizer to promote tillering and root growth.",
+          "Fall fertilizer LAST CHANCE: window closes Oct 20.",
+          "Overseed window closes Oct 10.",
+          "Core aeration window closes Oct 15.",
+          "Apply broadleaf herbicide for chickweed and henbit."
+        ],
+        plants: [
+          "Rake leaves away from Lavender and Roses to prevent rot.",
+          "Refresh mulch to insulate roots for winter."
+        ],
+        alerts: ["Fertilizer closes Oct 20", "Overseed closes Oct 10", "Aeration closes Oct 15"]
+      },
+      /* 10 — November */
+      {
+        season: "fall",
+        lawn: [
+          "Winterizer: Nov 15–30. Apply fast-release nitrogen (1 lb N / 1,000 sq ft) after top growth stops but grass is still green.",
+          "Mow to 3 inches and remove leaves/debris."
+        ],
+        plants: [
+          "Wrap Arborvitae in burlap if in wind-prone spots."
+        ],
+        alerts: ["Winterizer: Nov 15 – Nov 30"]
+      },
+      /* 11 — December */
+      {
+        season: "winter",
+        lawn:   ["No major tasks."],
+        plants: ["No major tasks. Monitor Arborvitae moisture if dry."],
+        alerts: []
+      }
+    ];
+
+    /* ============================================================
+       QUICK REFERENCE DATA
+       ============================================================ */
+    const QUICK_REF = {
+      lawn: [
+        { task: "Pre-emergent (Prodiamine/Dimension)",             window: "Mar 1 – Apr 11" },
+        { task: "Spring fertilizer",                               window: "Apr 1 – Apr 17" },
+        { task: "Grub preventative (Chlorantraniliprole/GrubEx)",  window: "Apr – Jun" },
+        { task: "Preventative fungicide (Azoxystrobin)",           window: "May 15 (nights > 65°F)" },
+        { task: "Season-long grub control (Acelepryn/Merit)",      window: "Jun 15" },
+        { task: "Irrigation watch",                                window: "Jun 1 – Sep 28" },
+        { task: "Grub / insect check",                             window: "Jul 1 – Sep 20" },
+        { task: "Fall fertilizer (strongest cool-season window)",  window: "Aug 25 – Oct 20" },
+        { task: "Overseed / seed repair",                          window: "Aug 25 – Oct 10" },
+        { task: "Core aeration",                                   window: "Sep 1 – Oct 15" },
+        { task: "Winterizer (fast-release N)",                     window: "Nov 15 – Nov 30" },
+      ],
+      plants: [
+        { task: "One big feeding (slow-release; acid-loving for Maple/Arborvitae)", window: "Late Mar – Early Apr" },
+        { task: "Post-bloom pruning (Rhododendron / old-wood Hydrangea)",            window: "After flowers fade (May/Jun)" },
+      ]
+    };
+
+    /* ============================================================
+       EMERGENCY GUIDE DATA
+       ============================================================ */
+    const EMERGENCY = {
+      plants: [
+        { symptom: "Crispy / brown edges",      means: "Heat stress or under-watering",       fix: "Water deeper. Afternoon shade for Maple." },
+        { symptom: "Yellow / mushy",            means: "Over-watering or root rot",            fix: "Stop watering immediately. Check drainage." },
+        { symptom: "Brown patches after cold",  means: "Winter burn (wind/cold dehydration)",  fix: "Anti-transpirant spray or plan burlap wrap next season." },
+        { symptom: "Sticky leaves, tiny bugs",  means: "Aphids",                               fix: "Blast with hose. Apply Neem oil." },
+      ],
+      lawn: [
+        { symptom: "Irregular dead patches (warm, humid)",       means: "Brown patch (temps > 85°F)",   fix: "Fungicide. Mow above 3\". Water 2–8 a.m. only." },
+        { symptom: "Similar patches, nights > 70°F (Jul–Oct)",  means: "Gray leaf spot",               fix: "Fungicide + multiple approaches. Remove clippings. Mow consistently above 3\"." },
+        { symptom: "Birds pecking, sod lifting, thinning areas", means: "Grub infestation",             fix: "Dig to confirm. Apply curative (Aug–Sep). Preventative next spring." },
+        { symptom: "Moss growing",                               means: "Soil too acidic",              fix: "Add wood ash." },
+        { symptom: "Heavy dandelion presence",                   means: "Compacted soil",               fix: "Core aeration (fall window)." },
+        { symptom: "Lots of clover",                             means: "Low nitrogen",                 fix: "Increase fertilization." },
+      ]
+    };
+
+    /* ============================================================
+       RENDER HELPERS
+       ============================================================ */
+    const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const SEASON_LABELS = { winter:"❄ Winter", spring:"🌱 Spring", summer:"☀ Summer", fall:"🍂 Fall" };
+    let currentMonth = new Date().getMonth(); // default to today
+
+    function renderPills() {
+      const container = document.getElementById('month-pills');
+      container.innerHTML = MONTHS.map((m, i) => {
+        const season = CALENDAR_DATA[i].season;
+        return `<button class="month-pill${i === currentMonth ? ' active' : ''}" data-season="${season}" onclick="selectMonth(${i})" aria-label="${m}">${m}</button>`;
+      }).join('');
+    }
+
+    function renderMonth(m) {
+      const d = CALENDAR_DATA[m];
+      let html = `<span class="season-badge ${d.season}">${SEASON_LABELS[d.season]}</span>`;
+
+      d.alerts.forEach(a => { html += `<div class="alert-strip">${a}</div>`; });
+
+      html += `<div class="task-card">
+        <p class="task-card-label lawn">🌱 Lawn</p>
+        ${d.lawn.map(t => `<div class="task-item"><span class="task-dot lawn"></span><span>${t}</span></div>`).join('')}
+      </div>`;
+
+      html += `<div class="task-card">
+        <p class="task-card-label plant">🌿 Plants</p>
+        ${d.plants.map(t => `<div class="task-item"><span class="task-dot plant"></span><span>${t}</span></div>`).join('')}
+      </div>`;
+
+      document.getElementById('month-content').innerHTML = html;
+    }
+
+    function renderQuickRef() {
+      document.getElementById('qr-lawn-rows').innerHTML =
+        QUICK_REF.lawn.map(r => `<tr><td>${r.task}</td><td>${r.window}</td></tr>`).join('');
+      document.getElementById('qr-plant-rows').innerHTML =
+        QUICK_REF.plants.map(r => `<tr><td>${r.task}</td><td>${r.window}</td></tr>`).join('');
+    }
+
+    function renderEmergency() {
+      document.getElementById('em-plant-rows').innerHTML =
+        EMERGENCY.plants.map(r => `<tr><td>${r.symptom}</td><td>${r.means}</td><td>${r.fix}</td></tr>`).join('');
+      document.getElementById('em-lawn-rows').innerHTML =
+        EMERGENCY.lawn.map(r => `<tr><td>${r.symptom}</td><td>${r.means}</td><td>${r.fix}</td></tr>`).join('');
+    }
+
+    /* ============================================================
+       INTERACTIONS
+       ============================================================ */
+    function selectMonth(i) {
+      currentMonth = i;
+      renderPills();
+      renderMonth(i);
+    }
+
+    function showTab(tab, btn) {
+      ['calendar','quickref','emergency'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+      });
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    renderPills();
+    renderMonth(currentMonth);
+    renderQuickRef();
+    renderEmergency();
+  </script>
+</body>
+</html>
